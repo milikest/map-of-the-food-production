@@ -1,4 +1,3 @@
-#
 # This is the server logic of a Shiny web application. You can run the
 # application by clicking 'Run App' above.
 #
@@ -13,7 +12,7 @@ library(tibble)
 library(googleVis)
 
 data <- read.csv("FAOSTAT_data_7-8-2022-All_Countries.csv")
-data$Area[data$Area=="TÃ¼rkiye"] <- "Turkey"
+data$Area[data$Area=="TÃ¼rkiye" | data$Area=="Türkiye"] <- "Turkey"
 data$Area[data$Area=="Bahamas"] <- "The Bahamas"
 data$Area[data$Area=="Bolivia (Plurinational State of)"] <- "Bolivia"
 data$Area[data$Area=="Brunei Darussalam"] <- "Brunei"
@@ -33,15 +32,13 @@ data$Area[data$Area=="United Republic of Tanzania"] <- "Tanzania"
 data$Area[data$Area=="United States of America"] <- "United States"
 data$Area[data$Area=="Venezuela (Bolivarian Republic of)"] <- "Venezuela"
 data$Area[data$Area=="Viet nam"] <- "Vietnam"
+data[is.na(data)] = 0
 
-new_grouped_data <- filter(data, Year == input$year_var, Item == input$food_var)
-
-# Define server logic required to draw a histogram
+# Server function
 shinyServer(function(input, output) {
-
-    output$distPlot <- renderGvis({
-      gvisGeoChart(item_data, locationvar = 'Area', colorvar = 'Value',
-                   options = list(projection ="kavrayskiy-vii"))
-    })
-
+  output$distPlot <- renderGvis({
+    gvisGeoChart(filter(data, Year == input$year_var, Item == input$food_var), locationvar = 'Area', colorvar = 'Value',
+                 options = list(projection ="kavrayskiy-vii",width=900,height=1000))
+  })
+  
 })
