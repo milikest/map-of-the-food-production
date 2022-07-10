@@ -12,6 +12,7 @@ library(dplyr)
 library(tibble)
 library(googleVis)
 library(plotly)
+library(DT)
 
 data <- read.csv("FAOSTAT_data_7-8-2022-All_Countries.csv")
 data$Area[data$Area=="TÃ¼rkiye" | data$Area=="Türkiye"] <- "Turkey"
@@ -38,6 +39,7 @@ data[is.na(data)] = 0
 colnames(data)[4] <- "Country"
 colnames(data)[12] <- "Tonnes"
 
+
 # Server function
 shinyServer(function(input, output) {
   output$distPlot <- renderGvis({
@@ -47,13 +49,32 @@ shinyServer(function(input, output) {
   output$toptable <- renderDataTable({
     filter(data, Year == input$year_var, Item == input$food_var)[,c(4,12)][order(filter(data, Year == input$year_var, Item == input$food_var)$Tonnes, decreasing = T),][1:10,]
   })
- 
+  
   output$p <- renderPlotly({
     plot_ly(x = filter(data, Country==input$country_var, Year==input$year_var2)[c(8,12)][order(filter(data, Country==input$country_var, Year==input$year_var2)[,c(12)], decreasing = T),]$Item[1:10],
             y = filter(data, Country==input$country_var, Year==input$year_var2)[c(8,12)][order(filter(data, Country==input$country_var, Year==input$year_var2)[,c(12)], decreasing = T),][,c(2)][1:10],
-            title = paste("Top 10 Food Production Of",input$country_var),
-            color=c("red", "blue", "black", "brown","green","darkblue","red","yelow","pink","purple"),
-              type = "bar") %>% hide_legend()
+            color = ~filter(data, Country==input$country_var, Year==input$year_var2)[c(8,12)][order(filter(data, Country==input$country_var, Year==input$year_var2)[,c(12)], decreasing = T),]$Item[1:10],
+            colors="BrBG",
+            type = "bar") %>% hide_legend()
+  })
+  
+  df_creater <- reactive({
+  foods <- unique(data$Item)
+  food <- array()
+  rank <- array()
+  for(i in 1:length(foods)){
+    fo_co <- filter(data, Item==foods[i], Year == input$year_var2)[,c(4,12)][order(filter(data,  Item == foods[i], Year == input$year_var2)$Tonnes, decreasing = T),] 
+    if(input$country_var %in% fo_co$Country){
+      rank <- append(rank, which(fo_co$Country == input$country_var))  
+      food <- append(food, foods[i])
+    }
+  }
+  df <- data.frame(food, rank)
+  return(df[order(df$rank,df$food),][1:10,])
+  })
+  
+  output$toprank <-renderDataTable({
+    df_creater()
   })
   
 })
