@@ -5,11 +5,13 @@
 #
 #    http://shiny.rstudio.com/
 #
-
+# Data has been gathered from https://www.fao.org/faostat/en/#data/QCL
+# From the source  All Countries, Production Quantity, Crops Primary>(List) and Crops Processed>List, All years are selected. 
 library(shiny)
 library(dplyr)
 library(tibble)
 library(googleVis)
+library(plotly)
 
 data <- read.csv("FAOSTAT_data_7-8-2022-All_Countries.csv")
 data$Area[data$Area=="TÃ¼rkiye" | data$Area=="Türkiye"] <- "Turkey"
@@ -33,12 +35,25 @@ data$Area[data$Area=="United States of America"] <- "United States"
 data$Area[data$Area=="Venezuela (Bolivarian Republic of)"] <- "Venezuela"
 data$Area[data$Area=="Viet nam"] <- "Vietnam"
 data[is.na(data)] = 0
+colnames(data)[4] <- "Country"
+colnames(data)[12] <- "Tonnes"
 
 # Server function
 shinyServer(function(input, output) {
   output$distPlot <- renderGvis({
-    gvisGeoChart(filter(data, Year == input$year_var, Item == input$food_var), locationvar = 'Area', colorvar = 'Value',
+    gvisGeoChart(filter(data, Year == input$year_var, Item == input$food_var), locationvar = 'Country', colorvar = 'Tonnes',
                  options = list(projection ="kavrayskiy-vii",width=900,height=1000))
+  })
+  output$toptable <- renderDataTable({
+    filter(data, Year == input$year_var, Item == input$food_var)[,c(4,12)][order(filter(data, Year == input$year_var, Item == input$food_var)$Tonnes, decreasing = T),][1:10,]
+  })
+ 
+  output$p <- renderPlotly({
+    plot_ly(x = filter(data, Country==input$country_var, Year==input$year_var2)[c(8,12)][order(filter(data, Country==input$country_var, Year==input$year_var2)[,c(12)], decreasing = T),]$Item[1:10],
+            y = filter(data, Country==input$country_var, Year==input$year_var2)[c(8,12)][order(filter(data, Country==input$country_var, Year==input$year_var2)[,c(12)], decreasing = T),][,c(2)][1:10],
+            title = paste("Top 10 Food Production Of",input$country_var),
+            color=c("red", "blue", "black", "brown","green","darkblue","red","yelow","pink","purple"),
+              type = "bar") %>% hide_legend()
   })
   
 })
