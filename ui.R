@@ -8,6 +8,7 @@
 
 library(shiny)
 library(plotly)
+library(DT)
 
 url <- "https://github.com/milikest/map-of-the-food-production/raw/main/FAOSTAT_data_7-8-2022-All_Countries.zip"
 download.file(url, destfile = "./data.zip")
@@ -49,47 +50,48 @@ select_countries <- unique(data$Country)[order(unique(data$Country))]
 shinyUI(fluidPage(
   tabsetPanel(
     tabPanel("Map Of Production",
-          # Application title
-          titlePanel("Food Production Analysis"),
-          
-          # Sidebar with food and year input
-          sidebarLayout(
-            sidebarPanel(
-              selectInput("food_var",
-                          label = "Select a Food",
-                          choices = select_items),
-              selectInput("year_var",
-                          label = "Select a Year",
-                          choices = select_years),
-              h3("Top Producer Countries:"),
-              dataTableOutput("toptable")
-            ),
-            
-            # Show a plot of the world map
-            mainPanel(
-              htmlOutput("distPlot")
-            )
-          )
-  ),
-  tabPanel("Country Lookup",
-           titlePanel("Food Production By Countries"),
-           sidebarLayout(
-             sidebarPanel(
-               selectInput("country_var",
-                           label = "Select a Country",
-                           choices = select_countries),
-               selectInput("year_var2",
-                           label = "Select a Year",
-                           choices = select_years)
+             # Application title
+             titlePanel("Food Production Analysis"),
+             
+             # Sidebar with food and year input
+             sidebarLayout(
+               sidebarPanel(
+                 selectInput("food_var",
+                             label = "Select a Food",
+                             choices = select_items),
+                 selectInput("year_var",
+                             label = "Select a Year",
+                             choices = select_years),
+                 h3("Top Producer Countries:"),
+                 dataTableOutput("toptable")
+               ),
                
-          
-             ),
-             mainPanel(
-               h3("Top 10 Food Production"),
-               plotlyOutput(outputId = "p")
-               
+               # Show a plot of the world map
+               mainPanel(
+                 htmlOutput("distPlot")
+               )
              )
+    ),
+    tabPanel("Country Lookup",
+             titlePanel("Food Production By Countries"),
+             sidebarLayout(
+               sidebarPanel(
+                 selectInput("country_var",
+                             label = "Select a Country",
+                             choices = select_countries),
+                 selectInput("year_var2",
+                             label = "Select a Year",
+                             choices = select_years)
+                 
+               ),
+               mainPanel(
+                 h3("Top 10 Food Production"),
+                 plotlyOutput(outputId = "p"),
+                 h3("Top 10 Ranks of Food Production"),
+                 dataTableOutput("toprank")
+                 
+               )
              )
-           )
-           )
+    )
+  )
 ))
