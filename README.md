@@ -1,4 +1,4 @@
-## Dashboard of The Food Producement
+## Dashboard of The Food Production
 
 ### Brief
 This is a dashboard application project written in R. Application can work locally but if R is not installed or local calculations not desired then application can be used in: https://c94mnx-mehmet-0l0k.shinyapps.io/Food_Analysis/
