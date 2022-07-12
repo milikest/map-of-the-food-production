@@ -1,8 +1,9 @@
 Dashboard of The Food Producement
 
 Brief
+This is a dashboard application project written in R. Application can work locally but if R is not installed or local calculations not desired then application can be used in: https://c94mnx-mehmet-0l0k.shinyapps.io/Food_Analysis/
 
-Dashboard is mainly about visualization of produced primary and processed crops foods stats. Food stats are gathered from FAO (link shown in below)
+Dashboard is mainly about visualization of produced primary and processed crops foods stats. Food stats were gathered from FAO (link shown in below)
 In the source All countries in 'Countries' section, Production Quantity in 'Elements' section, Crops Primary >(List), Crops Processed > (List) in 'Items' section and 
 2000-2020 in 'Years' section are selected. Dashboard consists of two visual tabs.
 
@@ -24,3 +25,6 @@ from the graphs after Covid-19 pandemic nearly all countries produced less food 
 Resources
 Food stats from FAO:
 https://www.fao.org/faostat/en/#data/QCL
+
+![alt text](https://github.com/milikest/map-of-the-food-production/blob/main/First%20Tab.png)
+![alt text](https://github.com/milikest/map-of-the-food-production/blob/main/Second%20Tab.png)
